@@ -22,10 +22,6 @@ class MatchListView(ListView):
         time_threshold = timezone.now() - timedelta(minutes=2)
         return Match.objects.filter(date__gt=time_threshold)
 
-"""
-def home(request):
-    return render(request, 'matches/index.html')
-"""
 
 @login_required
 def make_bet(request):
@@ -91,7 +87,9 @@ class UserBetListView(ListView):
         context['last10'] = Bet.objects.filter(user=user).order_by('-date')[:10]
         context['current'] = user.profile.coin
         context['currentUser'] = user
-        context['following'] = Follower.objects.filter(follower=self.request.user).values_list('user_id', flat=True)
+        context['following'] = []
+        if self.request.user.is_authenticated:
+            context['following'] = Follower.objects.filter(follower=self.request.user).values_list('user_id', flat=True)
         return context
 
 
